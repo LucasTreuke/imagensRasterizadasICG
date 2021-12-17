@@ -5,47 +5,66 @@
 	<script type="text/javascript" async
 		src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async>
 	</script>
+	<style>
+		figure{
+			display: flex;
+			flex-direction: column;
+			max-width: 700px;
+		}
+		body{
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+		}
+		button{
+			margin: 1px;
+			cursor: pointer;
+			padding: 3px 8px;
+		}
+	</style>
 </head>
 <body>
 	<h1>Exibição de histogramas de canais e alteração da luminância</h1>
 <figure>
-	<canvas id="imagemOriginal" width="900" height="600"></canvas>
-	<canvas id="imagemOutput" width="900" height="600"></canvas>
-	<canvas id="imagemOutputN" width="900" height="600"></canvas>
+	<canvas id="imagemOriginal_rgb" width="900" height="600"></canvas>
+	<canvas id="imagemOutput_rgb" width="900" height="600"></canvas>
+	<canvas id="imagemOutput_rgbN" width="900" height="600"></canvas>
 <figcaption>
 		Primeira imagem: Original, segunda imagem: Processada.
+		histogramas: Contagem de valores nos canais RGB, luminancia original e luminancia alterada respectivamente.
 	</figcaption>
 </figure>
 
 
 <script>
 
-	var canvasOriginal = document.getElementById("imagemOriginal");
-	var ctxOriginal = canvasOriginal.getContext("2d");
+	var canvasOriginal_rgb = document.getElementById("imagemOriginal_rgb");
+	var ctxOriginal_rgb = canvasOriginal_rgb.getContext("2d");
 
-	var canvasOut = document.getElementById("imagemOutput");
-	var ctxOutput = canvasOut.getContext("2d");
+	var canvasOut_rgb = document.getElementById("imagemOutput_rgb");
+	var ctxOutput_rgb = canvasOut_rgb.getContext("2d");
 
-	var canvasOutN = document.getElementById("imagemOutputN");
-	var ctxOutputN = canvasOutN.getContext("2d");
+	var canvasOut_rgbN = document.getElementById("imagemOutput_rgbN");
+	var ctxOutput_rgbN = canvasOut_rgbN.getContext("2d");
 
-	var imgOriginal = new Image();
-	var imgDataOut = new Image();
+	var imgOriginal_rgb = new Image();
+	var imgDataOut_rgb = new Image();
 
-	var imgUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/%D0%A8%D0%BF%D0%B8%D1%86%D1%96_3.jpg/1024px-%D0%A8%D0%BF%D0%B8%D1%86%D1%96_3.jpg";
-	// var imgUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Eiffel_tower_at_Exposition_Universelle%2C_Paris%2C_1889.jpg/800px-Eiffel_tower_at_Exposition_Universelle%2C_Paris%2C_1889.jpg";
+	var imgUrl_rgb = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/%D0%A8%D0%BF%D0%B8%D1%86%D1%96_3.jpg/1024px-%D0%A8%D0%BF%D0%B8%D1%86%D1%96_3.jpg";
+	// var imgUrl_rgb = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Eiffel_tower_at_Exposition_Universelle%2C_Paris%2C_1889.jpg/800px-Eiffel_tower_at_Exposition_Universelle%2C_Paris%2C_1889.jpg";
 
-	// var imgUrl = "https://images.prismic.io/mystique/42b93a56c65a3edc45e9228a1ef44035ec31c765_5e2aabb9-1560-44c5-8a92-a3ba0b2b1bd8-eiffel-tower-paris.jpg";
+	// var imgUrl_rgb = "https://images.prismic.io/mystique/42b93a56c65a3edc45e9228a1ef44035ec31c765_5e2aabb9-1560-44c5-8a92-a3ba0b2b1bd8-eiffel-tower-paris.jpg";
 	
-	imgOriginal.crossOrigin = '';
-	imgDataOut.crossOrigin = '';
-	imgOriginal.src = imgUrl;
+	imgOriginal_rgb.crossOrigin = '';
+	imgDataOut_rgb.crossOrigin = '';
+	imgOriginal_rgb.src = imgUrl_rgb;
 
 
 	
 
-	canvasOut.width = 255*3+10
-	canvasOut.height = 520
+	canvasOut_rgb.width = 255*3+10
+	canvasOut_rgb.height = 520
 
 	value_count = {}
 	value_count["R"] = {}
@@ -55,40 +74,40 @@
 	value_count["NL"] = {}
 
 	console.log("inicio do script")
-	imgOriginal.onload = function(){
-		canvasOriginal.width = imgOriginal.width
-		canvasOriginal.height = imgOriginal.height
-		canvasOutN.width = imgOriginal.width
-		canvasOutN.height = imgOriginal.height
-		
+	imgOriginal_rgb.onload = function(){
+		canvasOriginal_rgb.width = imgOriginal_rgb.width
+		canvasOriginal_rgb.height = imgOriginal_rgb.height
+		canvasOut_rgbN.width = imgOriginal_rgb.width
+		canvasOut_rgbN.height = imgOriginal_rgb.height
+
 		console.log("Image loaded")
-		ctxOriginal.drawImage(imgOriginal, 0, 0);
+		ctxOriginal_rgb.drawImage(imgOriginal_rgb, 0, 0);
 		
-		imgDataOut = ctxOriginal.getImageData(0, 0, imgOriginal.width, imgOriginal.height);
+		imgDataOut_rgb = ctxOriginal_rgb.getImageData(0, 0, imgOriginal_rgb.width, imgOriginal_rgb.height);
 		imgDataHsl = {data: {}}
 		
 		// passa por cada pixel
 		highest_value = 0
 		l_highest_value = 0
 
-		for (let i = 0; i < imgDataOut.data.length; i += 4) {
+		for (let i = 0; i < imgDataOut_rgb.data.length; i += 4) {
 			// Faz a contagem de cada nível de cor dos canais, salva em value_count
-			add_channel_count("R",imgDataOut.data[i])
-			add_channel_count("G",imgDataOut.data[i+1])
-			add_channel_count("B",imgDataOut.data[i+2])
+			add_channel_count("R",imgDataOut_rgb.data[i])
+			add_channel_count("G",imgDataOut_rgb.data[i+1])
+			add_channel_count("B",imgDataOut_rgb.data[i+2])
 
 			// marca o maior valor
-			if (value_count["R"][imgDataOut.data[i]]>highest_value){
-				highest_value=value_count["R"][imgDataOut.data[i]]
-			}if (value_count["G"][imgDataOut.data[i+1]]>highest_value){
-				highest_value=value_count["G"][imgDataOut.data[i+1]]
-			}if (value_count["B"][imgDataOut.data[i+2]]>highest_value){
-				highest_value=value_count["B"][imgDataOut.data[i+2]]
+			if (value_count["R"][imgDataOut_rgb.data[i]]>highest_value){
+				highest_value=value_count["R"][imgDataOut_rgb.data[i]]
+			}if (value_count["G"][imgDataOut_rgb.data[i+1]]>highest_value){
+				highest_value=value_count["G"][imgDataOut_rgb.data[i+1]]
+			}if (value_count["B"][imgDataOut_rgb.data[i+2]]>highest_value){
+				highest_value=value_count["B"][imgDataOut_rgb.data[i+2]]
 			}
 
 			// Encontra os valores em hsl
 			hsl_values = {}
-			hsl = rgbToHsl(imgDataOut.data[i],imgDataOut.data[i+1],imgDataOut.data[i+2])
+			hsl = rgbToHsl(imgDataOut_rgb.data[i],imgDataOut_rgb.data[i+1],imgDataOut_rgb.data[i+2])
 			hsl_values["h"] = hsl[0]
 			hsl_values["s"] = hsl[1]
 			hsl_values["l"] = hsl[2]
@@ -125,15 +144,15 @@
 
 			// nova imagem
 			n_rgb = hslToRgb(imgDataHsl.data[i],imgDataHsl.data[i + 1],imgDataHsl.data[i + 2])
-			imgDataOut.data[i] = n_rgb[0]
-			imgDataOut.data[i+1] = n_rgb[1]
-			imgDataOut.data[i+2] = n_rgb[2]
+			imgDataOut_rgb.data[i] = n_rgb[0]
+			imgDataOut_rgb.data[i+1] = n_rgb[1]
+			imgDataOut_rgb.data[i+2] = n_rgb[2]
 		
 		}
 		plots(value_count, highest_value)
 		plot(value_count["L"], l_highest_value, 0, "#000", 1)
 		plot(value_count["NL"], l_highest_value, 1, "#000", 1)
-		ctxOutputN.putImageData(imgDataOut, 0, 0);
+		ctxOutput_rgbN.putImageData(imgDataOut_rgb, 0, 0);
 	}
 
 	function add_channel_count(c,data){
@@ -156,7 +175,7 @@
 			if(s_value_count[i]){
 				h=s_value_count[i]
 			}
-			ctx = ctxOutput
+			ctx = ctxOutput_rgb
 			ctx.strokeStyle = color
 			ctx.beginPath();
 			ctx.moveTo(i+offset, offset_y+desired_height);
@@ -241,6 +260,117 @@
   return [ r * 255, g * 255, b * 255 ];
 }
 </script>
+
+
+<h1>Aplicação de filtros</h1>
+	<div id="buttons"></div>
+<figure>
+	<canvas id="imagemOriginal" width="900" height="600"></canvas>
+	<canvas id="imagemOutputN" width="900" height="600"></canvas>
+<figcaption>
+		Primeira imagem: Original, segunda: Processada.
+	</figcaption>
+</figure>
+
+<script>
+	var canvasOriginal = document.getElementById("imagemOriginal");
+	var ctxOriginal = canvasOriginal.getContext("2d");
+	
+
+	var canvasOutN = document.getElementById("imagemOutputN");
+	var ctxOutputN = canvasOutN.getContext("2d");
+	
+	var imgOriginal = new Image();
+	var imgDataOut = new Image();
+	
+	
+	var imgUrl = "https://fotografiamais.com.br/wp-content/uploads/2018/08/foto-preto-e-branco-fotografia-preto-e-branco-tecnicas.jpg";
+	// var imgUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Eiffel_tower_at_Exposition_Universelle%2C_Paris%2C_1889.jpg/800px-Eiffel_tower_at_Exposition_Universelle%2C_Paris%2C_1889.jpg";
+
+	imgOriginal.crossOrigin = '';
+	imgDataOut.crossOrigin = '';
+    imgOriginal.src = imgUrl;
+
+
+	kernel_list = {
+		"sharpen": [0, -1, 0, -1, 5, -1, 0, -1, 0],
+		"edges": [-1,-1,-1,-1,8,-1,-1,-1,-1],
+		"gaussian_blur": [1/16, 2/16, 1/16, 2/16, 4/16, 2/16, 1/16, 2/16, 1/16],
+		"blur": [1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9],
+		"id": [0,0,0,0,1,0,0,0,0]
+	}
+	
+	function apply_filter(filter_to_apply){	
+
+		ctxOriginal.drawImage(imgOriginal, 0, 0);
+		
+		imgDataOut = ctxOriginal.getImageData(0, 0, imgOriginal.width, imgOriginal.height);
+		imgOg = ctxOriginal.getImageData(0, 0, imgOriginal.width, imgOriginal.height).data;
+
+		for (let i = 0; i < imgDataOut.data.length; i += 4) {
+		
+			pixel_color = apply_kernel(imgOg, i, imgOriginal.width, imgDataOut.data.length, filter_to_apply)
+			imgDataOut.data[i] = pixel_color
+			imgDataOut.data[i+1] = pixel_color
+			imgDataOut.data[i+2] = pixel_color
+		
+		}
+		
+		ctxOutputN.putImageData(imgDataOut, 0, 0);
+	}
+
+
+	function apply_kernel(img,i,width,data_legth, filter){
+		isBorder = false
+		pixel = img[i]
+		
+		if( i%(width*4)==0){ //inicio de linha
+			isBorder = true
+		}else if(  (i+4) % (width*4)  ==0){ //fim de linha
+			isBorder = true
+		}else if(i - width*4 <0){
+			isBorder = true
+		}else if(i + width*4 > data_legth){
+			isBorder = true
+		}
+		if (isBorder){
+			pixel = 0
+		}
+		else{
+			pixel = img[i]*filter[4]
+
+			pixel+=filter[0]*img[i-(4*width)]
+			pixel+=filter[1]*img[i-4-(4*width)]
+			pixel+=filter[2]*img[i+4-(4*width)]
+			pixel+=filter[3]*img[i-4]
+			pixel+=filter[5]*img[i+4]
+			pixel+=filter[6]*img[i+(4*width)]
+			pixel+=filter[7]*img[i-4+(4*width)]
+			pixel+=filter[8]*img[i+4+(4*width)]
+		}
+
+		return pixel
+	}
+
+	imgOriginal.onload = function(){
+		canvasOriginal.width = imgOriginal.width
+		canvasOriginal.height = imgOriginal.height
+		canvasOutN.width = imgOriginal.width
+		canvasOutN.height = imgOriginal.height
+		apply_filter(kernel_list.id)
+	}
+
+	buttons_container = document.getElementById("buttons")
+	for(i in kernel_list){
+		button = document.createElement("button")
+		button.innerText = i
+		button.onclick = function(e){apply_filter(kernel_list[e.target.innerText])}
+		buttons_container.appendChild(button)
+	}
+</script>
+<br><hr>
+<p>Aluno: Lucas Treuke</p>
+
 
 </body>
 </html>
