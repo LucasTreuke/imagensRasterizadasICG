@@ -32,20 +32,17 @@
 	var imgOriginal = new Image();
 	var imgDataOut = new Image();
 
-	// var imgUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/%D0%A8%D0%BF%D0%B8%D1%86%D1%96_3.jpg/1024px-%D0%A8%D0%BF%D0%B8%D1%86%D1%96_3.jpg";
+	var imgUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/%D0%A8%D0%BF%D0%B8%D1%86%D1%96_3.jpg/1024px-%D0%A8%D0%BF%D0%B8%D1%86%D1%96_3.jpg";
 	// var imgUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Eiffel_tower_at_Exposition_Universelle%2C_Paris%2C_1889.jpg/800px-Eiffel_tower_at_Exposition_Universelle%2C_Paris%2C_1889.jpg";
 
-	var imgUrl = "https://images.prismic.io/mystique/42b93a56c65a3edc45e9228a1ef44035ec31c765_5e2aabb9-1560-44c5-8a92-a3ba0b2b1bd8-eiffel-tower-paris.jpg";
+	// var imgUrl = "https://images.prismic.io/mystique/42b93a56c65a3edc45e9228a1ef44035ec31c765_5e2aabb9-1560-44c5-8a92-a3ba0b2b1bd8-eiffel-tower-paris.jpg";
 	
 	imgOriginal.crossOrigin = '';
 	imgDataOut.crossOrigin = '';
 	imgOriginal.src = imgUrl;
 
 
-	canvasOriginal.width = imgOriginal.width
-	canvasOriginal.height = imgOriginal.height
-	canvasOutN.width = imgOriginal.width
-	canvasOutN.height = imgOriginal.height
+	
 
 	canvasOut.width = 255*3+10
 	canvasOut.height = 520
@@ -57,8 +54,14 @@
 	value_count["L"] = {}
 	value_count["NL"] = {}
 
-
+	console.log("inicio do script")
 	imgOriginal.onload = function(){
+		canvasOriginal.width = imgOriginal.width
+		canvasOriginal.height = imgOriginal.height
+		canvasOutN.width = imgOriginal.width
+		canvasOutN.height = imgOriginal.height
+		
+		console.log("Image loaded")
 		ctxOriginal.drawImage(imgOriginal, 0, 0);
 		
 		imgDataOut = ctxOriginal.getImageData(0, 0, imgOriginal.width, imgOriginal.height);

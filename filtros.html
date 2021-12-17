@@ -36,10 +36,6 @@
 	imgDataOut.crossOrigin = '';
     imgOriginal.src = imgUrl;
 
-	canvasOriginal.width = imgOriginal.width
-	canvasOriginal.height = imgOriginal.height
-	canvasOutN.width = imgOriginal.width
-	canvasOutN.height = imgOriginal.height
 
 	kernel_list = {
 		"sharpen": [0, -1, 0, -1, 5, -1, 0, -1, 0],
@@ -49,7 +45,12 @@
 		"id": [0,0,0,0,1,0,0,0,0]
 	}
 	
-	function apply_filter(filter_to_apply){
+	function apply_filter(filter_to_apply){	
+		canvasOriginal.width = imgOriginal.width
+		canvasOriginal.height = imgOriginal.height
+		canvasOutN.width = imgOriginal.width
+		canvasOutN.height = imgOriginal.height
+		
 		ctxOriginal.drawImage(imgOriginal, 0, 0);
 		
 		imgDataOut = ctxOriginal.getImageData(0, 0, imgOriginal.width, imgOriginal.height);
